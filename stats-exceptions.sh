@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+
 cut -b100-400 | sed -e "
 	s/\[[0-9a-f,]*\]//;
 	s/[0-9]* --- \[[^\]]*\] //;
@@ -25,9 +26,12 @@ cut -b100-400 | sed -e "
 	s/java.util.//;
 	s/Possible starvation in striped pool.*/Possible starvation in striped pool/;
 	s/RetryExceptionLogger.*Person.*on.*field[^A-Za-z]*\([a-zA-Z]*\).*/RetryExceptionLogger : error on field \1/g;
-	s/CODE//g;s/DETAIL//g;s/MESSAGE//g;s/[ :.][0-9][0-9]*//g;
+	s/CODE//g;
+	s/DETAIL//g;s/MESSAGE//g;
+	s/[ :.][0-9][0-9]*/ /g;
 	s/[^A-Za-z0-9 ]/ /g;
 	" |\
 	tr -- "-\t\$[]()<>;:,'\"" "       " | tr -s " " | cut -b1-100 | \
 	sort | uniq -c |\
 	sed -e "s/^[^0-9]*//" | sort -n
+
