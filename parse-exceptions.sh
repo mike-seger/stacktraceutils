@@ -2,9 +2,16 @@
 
 logtspattern="20[1234][0-9][^0-9]"
 
+if [ "$1" == "-lpat" ] ; then
+	logtspattern=$2
+	shift
+	shift
+fi
+
 if [ $# = 0 ] ; then
-	echo "Usage: $0 <log-files|log-archives.tgz>"
-	echo "-> outputs the number of occurred exceptions of a specific type per line sorted by occurrence"
+	echo "Usage: $0 [-lpat <logtspattern>] <log-files|log-archives.tgz>"
+	echo "-> Parse exceptions from log files and archives"
+	echo "Note: log entries are expected to match ^$logtspattern"
 	exit 1
 fi
 
@@ -16,11 +23,9 @@ function parseStackTracesFromText() {
 		y/\\\\%/__/;
 		s/^\($logtspattern\)/\\\\\1/" |\
 	tr '\n\t\\' "% \n" |\
-	sed -r -e "s/%[[:space:]]+at/%\\tat/" |\
+	sed -r -e "s/%[[:space:]]+at/%\\tat/g" |\
 	grep -P "%\tat" |\
 	sed -e 's/%/\\n/g;'
-#cut -b1-500 ;	return
-#	echo  |\
 }
 
 function pstTgz() {
